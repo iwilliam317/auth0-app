@@ -1,18 +1,15 @@
 import React, { Component } from 'react';
 import { Auth0Lock } from 'auth0-lock';
 import './App.css';
+import Config from './config/index'
 
 class App extends Component {
-
-
 
     constructor() {
         super();
 
-
         const lock = new Auth0Lock(
-            'CLIENT_ID',
-            'DOMAIN'
+            Config.client_id, Config.domain
         );
 
         this.state = {
