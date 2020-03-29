@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Auth0Lock } from 'auth0-lock';
 import './App.css';
-import Config from './config/index'
+import Config from './config/credentials'
 
 class App extends Component {
 
@@ -21,8 +21,6 @@ class App extends Component {
     }
 
     componentWillMount() {
-
-
         const accessToken = localStorage.getItem('accessToken');
         const profile = localStorage.getItem('profile');
 
@@ -38,75 +36,46 @@ class App extends Component {
     }
 
     onAuthentication = (authResult) => {
-
-        this.lock.getUserInfo(authResult.accessToken, (error, profile) => {
+        const { accessToken } = authResult
+        this.lock.getUserInfo(accessToken, (error, profile) => {
 
             if (error) {
                 console.error(error);
                 return;
             }
 
-
-            localStorage.setItem('accessToken', authResult.accessToken);
+            localStorage.setItem('accessToken', accessToken);
             localStorage.setItem('profile', JSON.stringify(profile));
 
-
             this.setState({
-                accessToken: authResult.accessToken,
-                profile: profile
+                accessToken, profile
             });
         });
 
     }
 
     showLogin = () => {
-
         this.lock.show();
+    }
 
+    clearState = () => {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('profile');
+        this.setState({ accessToken: null, profile: null });
     }
 
     logout = () => {
-
-        // Clear the localStorage
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('profile');
-
-        // Clean the state
-        this.setState({ accessToken: null, profile: null });
-
-        // Clear the Auth0 session then redirect back to the homepage
+        this.clearState()
         this.lock.logout();
 
     }
+
     render() {
+        const {profile} = this.state
         return (
             <div className="App">
                 <header className="App-header">
-
-                    {
-                        this.state.accessToken ?
-                            (
-                                // We're logged in
-                                // Load the user's name and a logout button
-                                <div>
-                                    <p>
-                                        {this.state.profile.name} is logged in
-                  </p>
-                                    <button onClick={this.logout}>Logout</button>
-                                </div>
-                            )
-                            :
-                            (
-                                // We're not logged in yet
-                                // Display the login button
-                                <div>
-                                    <p>
-                                        User is not logged in
-                  </p>
-                                    <button onClick={this.showLogin}>Login</button>
-                                </div>
-                            )
-                    }
+                    {this.state.accessToken ? (<div><p>{profile.name} is logged in</p><button onClick={this.logout}>Logout</button></div>) : (<div><p>User is not logged in</p><button onClick={this.showLogin}>Login</button></div>)}
                 </header>
             </div >
         );
