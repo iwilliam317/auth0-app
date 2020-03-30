@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Auth0Lock } from 'auth0-lock';
 import './App.css';
 import Config from './config/credentials'
-
 class App extends Component {
 
     constructor() {
@@ -27,7 +26,7 @@ class App extends Component {
         if (accessToken && profile) {
 
             this.setState({
-                accessToken: accessToken,
+                accessToken,
                 profile: JSON.parse(profile)
             });
 
